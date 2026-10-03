@@ -1,0 +1,29 @@
+/* Offerings made to the Sea Mother */
+.chat-message .msm-offering {
+  font-style: italic;
+}
+
+.chat-message .msm-offering .msm-label {
+  display: block;
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+/* Blibdoolpoolp's replies */
+.chat-message .msm-reply {
+  padding: 6px 8px;
+  border-left: 3px solid #1f6f78;
+  background: linear-gradient(90deg, rgba(16, 70, 82, 0.18), rgba(16, 70, 82, 0));
+}
+
+.chat-message .msm-reply p {
+  margin: 0 0 0.5em;
+}
+
+.chat-message .msm-reply p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-message .msm-reply strong {
+  color: #2a9d8f;
+}

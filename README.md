@@ -65,22 +65,73 @@ The full prompt the agent uses is in [`persona/mad_sea_mother.md`](persona/mad_s
 
 ## Project status
 
-🌊 **Early days.** The repository has been set up and this README describes where
-it's heading. Planned next steps:
+🌊 **Early days, but she speaks.** Players can already commune with her in Foundry VTT.
 
-- [ ] Choose the language/stack and the LLM provider
-- [x] Write the Mad Sea Mother system prompt (first draft)
-- [ ] Text in → in-character reply out (the simplest working loop)
+- [x] Choose the stack: JavaScript, Claude via the Anthropic API
+- [x] Write the Mad Sea Mother system prompt
+- [x] Text in → in-character reply out, inside Foundry VTT chat
+- [x] Memory of each character's earlier offerings (within the chat log)
 - [ ] Add image offerings
 - [ ] Add song offerings (lyrics first, then audio transcription)
-- [ ] Add memory of past offerings
-- [ ] A simple interface (CLI, then perhaps a web page)
 
-## Getting started
+## Foundry VTT module
 
-Setup instructions will go here once the stack is chosen. You will almost
-certainly need an API key for the model provider. Keep it in a local `.env` file,
-which is already ignored by git, and **never commit it**.
+The `foundry/` folder is a Foundry VTT module (v12 and v13). Players type an offering
+into the chat and Blibdoolpoolp answers in the chat log:
+
+```
+/msm I offer the skull of the drowned captain
+/offer a sea shanty: "Haul away, boys, haul away…"
+```
+
+### How it works
+
+1. A player types `/msm <offering>` (or `/offer <offering>`). The module posts it to
+   chat as an offering from their character.
+2. The **GM's browser** picks it up and sends it to Claude together with the persona
+   prompt, a note that she is speaking in a tabletop game, and that character's
+   recent offerings and replies (her memory).
+3. "*The water stirs…*" appears, then is replaced with her answer.
+
+Only the GM's browser holds the API key and calls the API, so **a GM must be logged
+in** for her to answer. Players never see the key.
+
+### Setup
+
+You need [Node.js](https://nodejs.org/) to build the module, and an
+[Anthropic API key](https://console.anthropic.com/).
+
+```bash
+npm install
+npm run build
+```
+
+This creates `dist/mad-sea-mother/`. Copy that folder into your Foundry user data's
+`Data/modules/` folder, then in Foundry:
+
+1. Enable **Mad Sea Mother** under *Manage Modules* in your world.
+2. As the GM, open *Configure Settings → Module Settings* and paste your API key.
+3. Type `/msm hello, Mother` in chat.
+
+### Settings (GM only)
+
+| Setting | What it does | Default |
+|---------|--------------|---------|
+| Anthropic API key | Stored in the GM's browser only | (empty) |
+| Claude model | The model she speaks through | `claude-opus-5-5` |
+| Effort | How hard she thinks: higher is slower and costs more | Medium |
+| Memory | How many earlier offerings per character she remembers | 6 |
+| Private communion | Whisper offerings and replies between the player and GMs | Off |
+
+**Costs:** every offering is a paid API call to your Anthropic account. Short
+offerings cost roughly 1–5 US cents each with the default settings, depending on
+effort and memory. You can set a spending limit in the Anthropic Console.
+
+### Development
+
+- Edit the persona in [`persona/mad_sea_mother.md`](persona/mad_sea_mother.md). It is
+  built into the module, so run `npm run build` again after changing it.
+- Module code lives in `foundry/src/`, and `npm test` runs the unit tests.
 
 ## Contributing
 
