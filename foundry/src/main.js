@@ -23,6 +23,8 @@ const SYSTEM_PROMPT = `${extractSystemPrompt(personaDoc)}\n\n${TABLETOP_CONTEXT}
 
 // Models that accept server-side refusal fallbacks.
 const FALLBACK_MODELS = new Set(["claude-opus-5-5", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5-5"]);
+// Models that reject the `effort` setting.
+const NO_EFFORT_MODELS = new Set(["claude-haiku-4-5"]);
 
 const setting = (key) => game.settings.get(MODULE_ID, key);
 
@@ -39,17 +41,22 @@ Hooks.once("init", () => {
 
   game.settings.register(MODULE_ID, "model", {
     name: "Claude model",
-    hint: "The model the Sea Mother speaks through.",
+    hint: "The model the Sea Mother speaks through. Haiku is cheapest and good for testing; Opus writes the best replies.",
     scope: "world",
     config: true,
     restricted: true,
     type: String,
+    choices: {
+      "claude-opus-5-5": "Claude Opus 5.5 (best, ~$4 / $20 per million tokens)",
+      "claude-sonnet-5-5": "Claude Sonnet 5.5 (balanced, ~$2 / $10 per million tokens)",
+      "claude-haiku-4-5": "Claude Haiku 4.5 (cheapest, ~$1 / $5 per million tokens)",
+    },
     default: "claude-opus-5-5",
   });
 
   game.settings.register(MODULE_ID, "effort", {
     name: "Effort",
-    hint: "How hard she thinks before answering. Higher effort is slower and costs more.",
+    hint: "How hard she thinks before answering. Higher effort is slower and costs more. Ignored by Haiku.",
     scope: "world",
     config: true,
     restricted: true,
@@ -178,7 +185,7 @@ async function askTheSeaMother(apiKey, messages) {
   const request = {
     model,
     max_tokens: 16000,
-    output_config: { effort: setting("effort") },
+    ...(NO_EFFORT_MODELS.has(model) ? {} : { output_config: { effort: setting("effort") } }),
     system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
     messages,
   };

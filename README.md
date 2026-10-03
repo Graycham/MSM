@@ -118,7 +118,7 @@ This creates `dist/mad-sea-mother/`. Copy that folder into your Foundry user dat
 | Setting | What it does | Default |
 |---------|--------------|---------|
 | Anthropic API key | Stored in the GM's browser only | (empty) |
-| Claude model | The model she speaks through | `claude-opus-5-5` |
+| Claude model | Opus 5.5 (best), Sonnet 5.5 or Haiku 4.5 (cheapest, good for testing) | Opus 5.5 |
 | Effort | How hard she thinks: higher is slower and costs more | Medium |
 | Memory | How many earlier offerings per character she remembers | 6 |
 | Private communion | Whisper offerings and replies between the player and GMs | Off |
