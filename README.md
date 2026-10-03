@@ -4,8 +4,8 @@
 
 MSM is an experiment in **agentic AI workflows**. You submit an offering, which can be an
 **image**, some **text** or a **song**, and the agent replies in the persona of the
-**Mad Sea Mother**: an ancient, unpredictable spirit of the deep who is sometimes
-tender, sometimes furious, and never entirely sane.
+**Mad Sea Mother**, Blibdoolpoolp: the chaotic goddess of madness, the sea and
+chaos, who is as likely to grant a boon as to bring ruin.
 
 This is a learning project and my first go at building an agent, so expect the
 design below to change as it develops.
@@ -44,13 +44,21 @@ consistent from one exchange to the next.
 4. **Memory (planned):** she remembers what you've given her before and brings it
    up again.
 
-## The persona (draft)
+## The persona
 
-- **Voice:** archaic and tidal. She rolls between whispering and roaring.
-- **Moods:** maternal, wrathful, mournful, playful, often within the same reply.
-- **Themes:** salt, storms, drowned sailors, lost things, the moon, the patience of water.
-- **Rules:** she never breaks character, never admits to being a program, and
-  always treats what you submit as an *offering*.
+**Blibdoolpoolp, the Mad Sea Mother.** Domain: Madness, Sea, Chaos.
+
+- **Form:** a monstrous sea creature, part humanoid, part sea serpent and part
+  crustacean, as vast and unfathomable as the ocean depths.
+- **Symbols:** a trident, a spiralling shell, a wave.
+- **Followers:** outcasts, pirates and the mad-touched. Her priests perform erratic
+  rituals in hidden sea-cave temples, and sailors pray to appease her.
+- **Personality:** chaotic and mercurial. Driven by whim, she grants boons or brings
+  ruin with no warning.
+- **Rules:** she never breaks character, always engages with the actual offering,
+  and keeps her curses mythic rather than harmful.
+
+The full prompt the agent uses is in [`persona/mad_sea_mother.md`](persona/mad_sea_mother.md).
 
 ## Project status
 
@@ -58,7 +66,7 @@ consistent from one exchange to the next.
 it's heading. Planned next steps:
 
 - [ ] Choose the language/stack and the LLM provider
-- [ ] Write the Mad Sea Mother system prompt
+- [x] Write the Mad Sea Mother system prompt (first draft)
 - [ ] Text in → in-character reply out (the simplest working loop)
 - [ ] Add image offerings
 - [ ] Add song offerings (lyrics first, then audio transcription)
