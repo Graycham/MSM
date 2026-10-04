@@ -1,14 +1,22 @@
 {
   "id": "mad-sea-mother",
-  "title": "Mad Sea Mother",
-  "description": "Players make offerings to Blibdoolpoolp, the Mad Sea Mother, from the chat, and she answers in character.",
-  "version": "0.1.0",
-  "authors": [{ "name": "Graycham" }],
+  "title": "Mad Sea Mother: Divine Communion",
+  "description": "Players make offerings to the gods (Blibdoolpoolp, Agni, Nyxara, Gaia and Chronos) from the chat, and each answers in character.",
+  "version": "0.2.0",
+  "authors": [
+    {
+      "name": "Graycham"
+    }
+  ],
   "compatibility": {
     "minimum": "12",
     "verified": "13"
   },
-  "esmodules": ["scripts/main.js"],
-  "styles": ["styles/msm.css"],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/msm.css"
+  ],
   "url": "https://github.com/Graycham/MSM"
 }

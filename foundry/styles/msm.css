@@ -27,3 +27,20 @@
 .chat-message .msm-reply strong {
   color: #2a9d8f;
 }
+
+/* Each god's colour */
+.chat-message .msm-god-agni { border-left-color: #e76f51; }
+.chat-message .msm-god-agni.msm-reply { background: linear-gradient(90deg, rgba(231, 111, 81, 0.18), rgba(231, 111, 81, 0)); }
+.chat-message .msm-god-agni strong { color: #e76f51; }
+
+.chat-message .msm-god-nyxara { border-left-color: #7b6fa8; }
+.chat-message .msm-god-nyxara.msm-reply { background: linear-gradient(90deg, rgba(60, 50, 90, 0.25), rgba(60, 50, 90, 0)); }
+.chat-message .msm-god-nyxara strong { color: #9d8fd0; }
+
+.chat-message .msm-god-gaia { border-left-color: #4f9a4a; }
+.chat-message .msm-god-gaia.msm-reply { background: linear-gradient(90deg, rgba(79, 154, 74, 0.18), rgba(79, 154, 74, 0)); }
+.chat-message .msm-god-gaia strong { color: #5fae59; }
+
+.chat-message .msm-god-chronos { border-left-color: #c9a227; }
+.chat-message .msm-god-chronos.msm-reply { background: linear-gradient(90deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0)); }
+.chat-message .msm-god-chronos strong { color: #c9a227; }

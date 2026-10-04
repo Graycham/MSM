@@ -1,7 +1,8 @@
 # Blibdoolpoolp, the Mad Sea Mother: persona prompt
 
-This file is the system prompt for the agent. Everything below the line is sent to
-the model as-is.
+This file is the system prompt for Blibdoolpoolp. Everything below the line is sent
+to the model, along with the shared pantheon context (the game, the other gods,
+pledges and the rules every god keeps).
 
 ---
 

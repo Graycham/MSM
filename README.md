@@ -61,7 +61,26 @@ consistent from one exchange to the next.
 - **Rules:** she never breaks character, always engages with the actual offering,
   and keeps her curses mythic rather than harmful.
 
-The full prompt the agent uses is in [`persona/mad_sea_mother.md`](persona/mad_sea_mother.md).
+The full prompt is in [`persona/blibdoolpoolp.md`](persona/blibdoolpoolp.md).
+
+### The rest of the pantheon
+
+Players can also commune with four other gods, each with their own persona file:
+
+| God | Domains | Command | Persona |
+|-----|---------|---------|---------|
+| **Blibdoolpoolp**, the Mad Sea Mother | Madness, Sea, Chaos | `/msm` | [`blibdoolpoolp.md`](persona/blibdoolpoolp.md) |
+| **Agni**, the Humble Axeman | Fire, Warmth, Justice | `/agni` | [`agni.md`](persona/agni.md) |
+| **Nyxara**, the Veiled Shadow | Death, Shadow, Secrets | `/nyxara` | [`nyxara.md`](persona/nyxara.md) |
+| **Gaia**, Nature's Shepherd | Nature, Balance, Life | `/gaia` | [`gaia.md`](persona/gaia.md) |
+| **Chronos**, the Timekeeper | Time, Fate, Destiny | `/chronos` | [`chronos.md`](persona/chronos.md) |
+
+Every god also gets shared context (built in
+[`foundry/src/helpers.js`](foundry/src/helpers.js)): that they're in a tabletop
+game, who the other gods are, which characters are pledged to whom, and the rules
+every god keeps. Gods are warmer and more generous to their own followers, cooler
+to followers of other gods, and kinder to a stranger who is trying to help one of
+their own.
 
 ## Project status
 
@@ -71,30 +90,38 @@ The full prompt the agent uses is in [`persona/mad_sea_mother.md`](persona/mad_s
 - [x] Write the Mad Sea Mother system prompt
 - [x] Text in → in-character reply out, inside Foundry VTT chat
 - [x] Memory of each character's earlier offerings (within the chat log)
+- [x] A pantheon: Agni, Nyxara, Gaia and Chronos, with pledged followers
 - [ ] Add image offerings
 - [ ] Add song offerings (lyrics first, then audio transcription)
 
 ## Foundry VTT module
 
 The `foundry/` folder is a Foundry VTT module (v12 and v13). Players type an offering
-into the chat and Blibdoolpoolp answers in the chat log:
+into the chat and the god answers in the chat log:
 
 ```
 /msm I offer the skull of the drowned captain
-/offer a sea shanty: "Haul away, boys, haul away…"
+/agni the first loaf from the new oven
+/nyxara a coin taken from a dead man's eyes
+/gaia an acorn from the burned forest
+/chronos my journal of the journey so far
+/commune Gaia an acorn          (works for any god)
 ```
+
+`/offer` and `/blib` also reach Blibdoolpoolp, and `/gia` reaches Gaia.
 
 ### How it works
 
-1. A player types `/msm <offering>` (or `/offer <offering>`). The module posts it to
-   chat as an offering from their character.
-2. The **GM's browser** picks it up and sends it to Claude together with the persona
-   prompt, a note that she is speaking in a tabletop game, and that character's
-   recent offerings and replies (her memory).
-3. "*The water stirs…*" appears, then is replaced with her answer.
+1. A player types `/<god> <offering>`. The module posts it to chat as an offering
+   from their character.
+2. The **GM's browser** picks it up and sends it to Claude together with that god's
+   persona, the shared pantheon context and pledges, and that character's recent
+   offerings to that god (each god has their own memory of each character).
+3. A short line such as "*The water stirs…*" or "*The embers brighten…*" appears,
+   then is replaced with the god's answer.
 
 Only the GM's browser holds the API key and calls the API, so **a GM must be logged
-in** for her to answer. Players never see the key.
+in** for the gods to answer. Players never see the key.
 
 ### Setup
 
@@ -122,6 +149,7 @@ This creates `dist/mad-sea-mother/`. Copy that folder into your Foundry user dat
 | Effort | How hard she thinks: higher is slower and costs more | Medium |
 | Memory | How many earlier offerings per character she remembers | 6 |
 | Private communion | Whisper offerings and replies between the player and GMs | Off |
+| Pledges | Who follows whom, as `Character: God, God` separated by `;` | Fiddle: Blibdoolpoolp; Durzo: Nyxara; Gideon: Nyxara, Gaia; Ulrick: Agni; D.E.R.E.K: Chronos |
 
 **Costs:** every offering is a paid API call to your Anthropic account. Short
 offerings cost roughly 1–5 US cents each with the default settings, depending on
@@ -129,8 +157,12 @@ effort and memory. You can set a spending limit in the Anthropic Console.
 
 ### Development
 
-- Edit the persona in [`persona/mad_sea_mother.md`](persona/mad_sea_mother.md). It is
-  built into the module, so run `npm run build` again after changing it.
+- Edit the personas in [`persona/`](persona/). They are built into the module, so
+  run `npm run build` again after changing one. Pledges are a Foundry setting, so
+  changing those needs no rebuild.
+- To add another god, add an entry to [`foundry/src/gods.js`](foundry/src/gods.js),
+  a persona file in `persona/`, an import in `foundry/src/personas.js`, and
+  optionally a colour in `foundry/styles/msm.css`.
 - Module code lives in `foundry/src/`, and `npm test` runs the unit tests.
 
 ## Contributing
