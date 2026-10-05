@@ -123,22 +123,48 @@ into the chat and the god answers in the chat log:
 Only the GM's browser holds the API key and calls the API, so **a GM must be logged
 in** for the gods to answer. Players never see the key.
 
-### Setup
+### Install in Foundry
 
-You need [Node.js](https://nodejs.org/) to build the module, and an
-[Anthropic API key](https://console.anthropic.com/).
+You need an [Anthropic API key](https://console.anthropic.com/).
+
+1. On Foundry's setup screen, go to **Add-on Modules → Install Module**.
+2. Paste this into **Manifest URL** at the bottom and click **Install**:
+   ```
+   https://github.com/Graycham/MSM/releases/latest/download/module.json
+   ```
+3. Launch your world and enable **Mad Sea Mother: Divine Communion** under
+   *Manage Modules*.
+4. As the GM, open *Configure Settings → Module Settings* and paste your API key.
+5. Type `/msm hello, Mother` in chat.
+
+**Updating:** on Foundry's setup screen, go to **Add-on Modules** and click
+**Check for Updates** (or **Update All**). Your settings and API key are kept.
+
+### Publishing a new version
+
+New versions are published automatically by GitHub Actions
+([`.github/workflows/release.yml`](.github/workflows/release.yml)):
+
+1. Raise `version` in [`foundry/module.json`](foundry/module.json), for example
+   `0.2.0` → `0.3.0`. (Foundry only offers an update when the version goes up.)
+2. Merge the change into `main`.
+3. The workflow tests and builds the module, then creates a GitHub Release
+   (`v0.3.0`) holding `module.json` and `mad-sea-mother.zip`. Foundry finds it
+   with **Check for Updates**.
+
+Pushes to `main` that don't change the version don't publish anything.
+
+### Building it yourself
+
+To build locally instead (needs [Node.js](https://nodejs.org/)):
 
 ```bash
 npm install
 npm run build
 ```
 
-This creates `dist/mad-sea-mother/`. Copy that folder into your Foundry user data's
-`Data/modules/` folder, then in Foundry:
-
-1. Enable **Mad Sea Mother** under *Manage Modules* in your world.
-2. As the GM, open *Configure Settings → Module Settings* and paste your API key.
-3. Type `/msm hello, Mother` in chat.
+This creates `dist/mad-sea-mother/`, which you can copy into your Foundry user
+data's `Data/modules/` folder.
 
 ### Settings (GM only)
 

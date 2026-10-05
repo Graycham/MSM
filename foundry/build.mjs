@@ -1,7 +1,7 @@
 // Builds the Foundry module into dist/mad-sea-mother, ready to copy into
 // Foundry's Data/modules folder.
 import { build } from "esbuild";
-import { cpSync, mkdirSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,7 +24,13 @@ await build({
   logLevel: "info",
 });
 
-cpSync(join(here, "module.json"), join(out, "module.json"));
+// Point Foundry at GitHub Releases so it can install and update the module
+// from a manifest URL. The release workflow publishes these files.
+const RELEASES = "https://github.com/Graycham/MSM/releases";
+const manifest = JSON.parse(readFileSync(join(here, "module.json"), "utf8"));
+manifest.manifest = `${RELEASES}/latest/download/module.json`;
+manifest.download = `${RELEASES}/download/v${manifest.version}/mad-sea-mother.zip`;
+writeFileSync(join(out, "module.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 cpSync(join(here, "styles"), join(out, "styles"), { recursive: true });
 
 console.log(`Module built at ${out}`);
