@@ -9,7 +9,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { DEFAULT_PLEDGES, GODS } from "./gods.js";
 import { buildMessages, buildPantheonContext, escapeHtml, formatOffering, markdownToHtml, parseOffering } from "./helpers.js";
-import { PERSONAS } from "./personas.js";
+import { PERSONAS, WORLD } from "./personas.js";
 
 const MODULE_ID = "mad-sea-mother";
 
@@ -173,7 +173,7 @@ async function answerOffering(offeringMessage, godId, offering) {
   });
 
   try {
-    const system = `${PERSONAS[godId]}\n\n${buildPantheonContext(godId, setting("pledges"))}`;
+    const system = `${PERSONAS[godId]}\n\n${WORLD}\n\n${buildPantheonContext(godId, setting("pledges"))}`;
     const messages = buildMessages(earlierExchanges(key, offeringMessage.id), prompt, setting("memory"));
     const text = await askTheGod(apiKey, system, messages);
     await reply.update({

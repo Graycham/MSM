@@ -75,6 +75,12 @@ Players can also commune with four other gods, each with their own persona file:
 | **Gaia**, Nature's Shepherd | Nature, Balance, Life | `/gaia` | [`gaia.md`](persona/gaia.md) |
 | **Chronos**, the Timekeeper | Time, Fate, Destiny | `/chronos` | [`chronos.md`](persona/chronos.md) |
 
+Every god also knows the campaign's lore, in [`persona/world.md`](persona/world.md):
+the War of the Gods, the six gods (including Auril), the four futures, the heroes,
+the fallen, allies, enemies and places. It's condensed from the DM's
+[War of the Gods site](https://limtlessltd.github.io/war-of-the-gods/) and should be
+updated as the campaign moves on.
+
 Every god also gets shared context (built in
 [`foundry/src/helpers.js`](foundry/src/helpers.js)): that they're in a tabletop
 game, who the other gods are, which characters are pledged to whom, and the rules
@@ -184,7 +190,8 @@ effort and memory. You can set a spending limit in the Anthropic Console.
 ### Development
 
 - Edit the personas in [`persona/`](persona/). They are built into the module, so
-  run `npm run build` again after changing one. Pledges are a Foundry setting, so
+  run `npm run build` again after changing one (or raise the version and merge to
+  `main` to publish an update). Pledges are a Foundry setting, so
   changing those needs no rebuild.
 - To add another god, add an entry to [`foundry/src/gods.js`](foundry/src/gods.js),
   a persona file in `persona/`, an import in `foundry/src/personas.js`, and

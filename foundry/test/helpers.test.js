@@ -43,6 +43,13 @@ test("every god has a persona file whose prompt starts with their name", () => {
   }
 });
 
+test("the shared world lore extracts cleanly", () => {
+  const doc = readFileSync(new URL("../../persona/world.md", import.meta.url), "utf8");
+  const lore = extractSystemPrompt(doc);
+  assert.ok(lore.startsWith("## The world you know"));
+  assert.ok(!lore.includes("limtlessltd"));
+});
+
 test("findGod matches names and commands case-insensitively", () => {
   assert.equal(findGod("BLIB"), "blibdoolpoolp");
   assert.equal(findGod("Chronos"), "chronos");
