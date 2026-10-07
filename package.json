@@ -1,0 +1,17 @@
+{
+  "name": "mad-sea-mother",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Foundry VTT module that lets players commune with Blibdoolpoolp, the Mad Sea Mother",
+  "type": "module",
+  "scripts": {
+    "build": "node foundry/build.mjs",
+    "test": "node --test \"foundry/test/*.test.js\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

@@ -1,0 +1,62 @@
+# Publishes the Foundry module as a GitHub Release whenever main has a version
+# in foundry/module.json that hasn't been released yet. Foundry installs and
+# updates the module from the release's module.json (the manifest URL).
+name: Release Foundry module
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./foundry/module.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version is already released
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "v${{ steps.version.outputs.version }}" > /dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "v${{ steps.version.outputs.version }} is already released. Bump the version in foundry/module.json to publish an update."
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install, test and build
+        if: steps.existing.outputs.released == 'false'
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Zip the module
+        if: steps.existing.outputs.released == 'false'
+        working-directory: dist/mad-sea-mother
+        run: zip -r ../mad-sea-mother.zip .
+
+      - name: Publish the release
+        if: steps.existing.outputs.released == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            dist/mad-sea-mother.zip \
+            dist/mad-sea-mother/module.json \
+            --title "Divine Communion v${{ steps.version.outputs.version }}" \
+            --generate-notes

@@ -1,0 +1,204 @@
+# MSM — Mad Sea Mother
+
+> *"Bring me your offerings, little drowned thing. A picture, a scrap of words, a song half-remembered — the tide takes all of it, and I answer."*
+
+MSM is an experiment in **agentic AI workflows**. You submit an offering, which can be an
+**image**, some **text** or a **song**, and the agent replies in the persona of the
+**Mad Sea Mother**, Blibdoolpoolp: the chaotic goddess of madness, the sea and
+chaos, who is as likely to grant a boon as to bring ruin.
+
+This is a learning project and my first go at building an agent, so expect the
+design below to change as it develops.
+
+## What it should do
+
+| You submit | The Mad Sea Mother… |
+|------------|---------------------|
+| 🖼️ **An image** | Looks at it through the murk and tells you what the sea sees in it: omens, drowned memories, things that belong to her. |
+| 📝 **Text** | Reads your words like a message in a bottle and answers it in her voice, with riddles, prophecy, scorn or lullaby. |
+| 🎵 **A song** | Listens to the lyrics and the mood and answers in kind, maybe with a verse of her own sung back from the deep. |
+
+Every reply should stay in character: her voice, her moods and her mythology stay
+consistent from one exchange to the next.
+
+## How it's intended to work
+
+```
+  ┌────────────┐     ┌──────────────────┐     ┌──────────────────────┐     ┌──────────┐
+  │  Offering  │ ──▶ │  Input handling  │ ──▶ │  Agent (LLM + tools) │ ──▶ │  Reply   │
+  │ image/text │     │  detect type,    │     │  persona prompt,     │     │  in the  │
+  │   /song    │     │  preprocess      │     │  memory, reasoning   │     │  voice   │
+  └────────────┘     └──────────────────┘     └──────────────────────┘     └──────────┘
+```
+
+1. **Input handling:** works out what kind of offering arrived and prepares it.
+   - *Images* go straight to a multimodal (vision-capable) model.
+   - *Text* is passed through as is.
+   - *Songs*: many LLMs can't take raw audio, so a song will probably arrive as
+     lyrics, or as audio that is first transcribed to text (and maybe analysed for
+     tempo or mood) before it reaches the agent.
+2. **Persona:** a system prompt defines who the Mad Sea Mother is, including her
+   voice, temperament, lore and the rules she never breaks.
+3. **Agent loop:** the model reasons about the offering and can call tools, such as
+   transcription, image description or recalling past offerings, before it answers.
+4. **Memory (planned):** she remembers what you've given her before and brings it
+   up again.
+
+## The persona
+
+**Blibdoolpoolp, the Mad Sea Mother.** Domain: Madness, Sea, Chaos.
+
+- **Form:** a monstrous sea creature, part humanoid, part sea serpent and part
+  crustacean, as vast and unfathomable as the ocean depths.
+- **Symbols:** a trident, a spiralling shell, a wave.
+- **Followers:** outcasts, pirates and the mad-touched. Her priests perform erratic
+  rituals in hidden sea-cave temples, and sailors pray to appease her.
+- **Personality:** chaotic and mercurial. Very mad, but she always knows exactly
+  what she is doing.
+- **Extremes only:** she cares nothing for the mundane. Really good or really bad
+  offerings make her commune fully and grant a boon or bring ruin. Ordinary ones get
+  a bored line or two.
+- **Rules:** she never breaks character, always engages with the actual offering,
+  and keeps her curses mythic rather than harmful.
+
+The full prompt is in [`persona/blibdoolpoolp.md`](persona/blibdoolpoolp.md).
+
+### The rest of the pantheon
+
+Players can also commune with four other gods, each with their own persona file:
+
+| God | Domains | Command | Persona |
+|-----|---------|---------|---------|
+| **Blibdoolpoolp**, the Mad Sea Mother | Madness, Sea, Chaos | `/msm` | [`blibdoolpoolp.md`](persona/blibdoolpoolp.md) |
+| **Agni**, the Humble Axeman | Fire, Warmth, Justice | `/agni` | [`agni.md`](persona/agni.md) |
+| **Nyxara**, the Veiled Shadow | Death, Shadow, Secrets | `/nyxara` | [`nyxara.md`](persona/nyxara.md) |
+| **Gaia**, Nature's Shepherd | Nature, Balance, Life | `/gaia` | [`gaia.md`](persona/gaia.md) |
+| **Chronos**, the Timekeeper | Time, Fate, Destiny | `/chronos` | [`chronos.md`](persona/chronos.md) |
+
+Every god also knows the campaign's lore, in [`persona/world.md`](persona/world.md):
+the War of the Gods, the six gods (including Auril), the four futures, the heroes,
+the fallen, allies, enemies and places. It's condensed from the DM's
+[War of the Gods site](https://limtlessltd.github.io/war-of-the-gods/) and should be
+updated as the campaign moves on.
+
+Every god also gets shared context (built in
+[`foundry/src/helpers.js`](foundry/src/helpers.js)): that they're in a tabletop
+game, who the other gods are, which characters are pledged to whom, and the rules
+every god keeps. Gods are warmer and more generous to their own followers, cooler
+to followers of other gods, and kinder to a stranger who is trying to help one of
+their own.
+
+## Project status
+
+🌊 **Early days, but she speaks.** Players can already commune with her in Foundry VTT.
+
+- [x] Choose the stack: JavaScript, Claude via the Anthropic API
+- [x] Write the Mad Sea Mother system prompt
+- [x] Text in → in-character reply out, inside Foundry VTT chat
+- [x] Memory of each character's earlier offerings (within the chat log)
+- [x] A pantheon: Agni, Nyxara, Gaia and Chronos, with pledged followers
+- [ ] Add image offerings
+- [ ] Add song offerings (lyrics first, then audio transcription)
+
+## Foundry VTT module
+
+The `foundry/` folder is a Foundry VTT module (v12 and v13). Players type an offering
+into the chat and the god answers in the chat log:
+
+```
+/msm I offer the skull of the drowned captain
+/agni the first loaf from the new oven
+/nyxara a coin taken from a dead man's eyes
+/gaia an acorn from the burned forest
+/chronos my journal of the journey so far
+/commune Gaia an acorn          (works for any god)
+```
+
+`/offer` and `/blib` also reach Blibdoolpoolp, and `/gia` reaches Gaia.
+
+### How it works
+
+1. A player types `/<god> <offering>`. The module posts it to chat as an offering
+   from their character.
+2. The **GM's browser** picks it up and sends it to Claude together with that god's
+   persona, the shared pantheon context and pledges, and that character's recent
+   offerings to that god (each god has their own memory of each character).
+3. A short line such as "*The water stirs…*" or "*The embers brighten…*" appears,
+   then is replaced with the god's answer.
+
+Only the GM's browser holds the API key and calls the API, so **a GM must be logged
+in** for the gods to answer. Players never see the key.
+
+### Install in Foundry
+
+You need an [Anthropic API key](https://console.anthropic.com/).
+
+1. On Foundry's setup screen, go to **Add-on Modules → Install Module**.
+2. Paste this into **Manifest URL** at the bottom and click **Install**:
+   ```
+   https://github.com/Graycham/MSM/releases/latest/download/module.json
+   ```
+3. Launch your world and enable **Mad Sea Mother: Divine Communion** under
+   *Manage Modules*.
+4. As the GM, open *Configure Settings → Module Settings* and paste your API key.
+5. Type `/msm hello, Mother` in chat.
+
+**Updating:** on Foundry's setup screen, go to **Add-on Modules** and click
+**Check for Updates** (or **Update All**). Your settings and API key are kept.
+
+### Publishing a new version
+
+New versions are published automatically by GitHub Actions
+([`.github/workflows/release.yml`](.github/workflows/release.yml)):
+
+1. Raise `version` in [`foundry/module.json`](foundry/module.json), for example
+   `0.2.0` → `0.3.0`. (Foundry only offers an update when the version goes up.)
+2. Merge the change into `main`.
+3. The workflow tests and builds the module, then creates a GitHub Release
+   (`v0.3.0`) holding `module.json` and `mad-sea-mother.zip`. Foundry finds it
+   with **Check for Updates**.
+
+Pushes to `main` that don't change the version don't publish anything.
+
+### Building it yourself
+
+To build locally instead (needs [Node.js](https://nodejs.org/)):
+
+```bash
+npm install
+npm run build
+```
+
+This creates `dist/mad-sea-mother/`, which you can copy into your Foundry user
+data's `Data/modules/` folder.
+
+### Settings (GM only)
+
+| Setting | What it does | Default |
+|---------|--------------|---------|
+| Anthropic API key | Stored in the GM's browser only | (empty) |
+| Claude model | Opus 5.5 (best), Sonnet 5.5 or Haiku 4.5 (cheapest, good for testing) | Opus 5.5 |
+| Effort | How hard she thinks: higher is slower and costs more | Medium |
+| Memory | How many earlier offerings per character she remembers | 6 |
+| Private communion | Whisper offerings and replies between the player and GMs | Off |
+| Pledges | Who follows whom, as `Character: God, God` separated by `;` | Fiddle: Blibdoolpoolp; Durzo: Nyxara; Gideon: Nyxara, Gaia; Ulrick: Agni; D.E.R.E.K: Chronos |
+
+**Costs:** every offering is a paid API call to your Anthropic account. Short
+offerings cost roughly 1–5 US cents each with the default settings, depending on
+effort and memory. You can set a spending limit in the Anthropic Console.
+
+### Development
+
+- Edit the personas in [`persona/`](persona/). They are built into the module, so
+  run `npm run build` again after changing one (or raise the version and merge to
+  `main` to publish an update). Pledges are a Foundry setting, so
+  changing those needs no rebuild.
+- To add another god, add an entry to [`foundry/src/gods.js`](foundry/src/gods.js),
+  a persona file in `persona/`, an import in `foundry/src/personas.js`, and
+  optionally a colour in `foundry/styles/msm.css`.
+- Module code lives in `foundry/src/`, and `npm test` runs the unit tests.
+
+## Contributing
+
+This is a personal learning project, but ideas and suggestions are welcome. Open
+an issue if the sea speaks to you.
