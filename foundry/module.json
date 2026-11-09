@@ -2,7 +2,7 @@
   "id": "mad-sea-mother",
   "title": "Mad Sea Mother: Divine Communion",
   "description": "Players make offerings to the gods (Blibdoolpoolp, Agni, Nyxara, Gaia and Chronos) from the chat, and each answers in character.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "authors": [
     {
       "name": "Graycham"
@@ -10,7 +10,7 @@
   ],
   "compatibility": {
     "minimum": "12",
-    "verified": "13"
+    "verified": "14"
   },
   "esmodules": [
     "scripts/main.js"

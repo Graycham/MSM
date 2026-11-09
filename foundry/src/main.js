@@ -89,6 +89,15 @@ Hooks.once("init", () => {
   });
 });
 
+// Startup log so it is obvious in the browser console (F12) that the module loaded.
+Hooks.once("ready", () => {
+  const chatLog = foundry.applications?.sidebar?.tabs?.ChatLog ?? globalThis.ChatLog;
+  console.log(
+    `${MODULE_ID} | loaded on Foundry ${game.version}. Core chat commands:`,
+    Object.keys(chatLog?.CHAT_COMMANDS ?? {}),
+  );
+});
+
 /** The GM's browser is the only one that answers offerings. */
 function isAnsweringClient() {
   return game.users.activeGM?.isSelf ?? false;
