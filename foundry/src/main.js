@@ -121,14 +121,15 @@ function replyHtml(godId, inner) {
 }
 
 // 1. Any client: turn `/agni ...`, `/msm ...` etc. into an offering message.
-Hooks.on("chatMessage", (_chatLog, content) => {
+/** Posts the offering if `content` is one. Returns true when the message was handled. */
+function handleOffering(content) {
   const parsed = parseOffering(content);
-  if (parsed === null) return true;
+  if (parsed === null) return false;
   const god = GODS[parsed.godId];
 
   if (!game.users.activeGM) {
     ui.notifications.warn(`No GM is connected. ${god.name} cannot hear you.`);
-    return false;
+    return true;
   }
 
   ChatMessage.create({
@@ -137,7 +138,36 @@ Hooks.on("chatMessage", (_chatLog, content) => {
     whisper: whisperTargets(game.user.id),
     flags: { [MODULE_ID]: { type: "offering", god: parsed.godId, text: parsed.offering } },
   });
-  return false;
+  return true;
+}
+
+// Foundry v12 and earlier: the chatMessage hook sees every message first.
+Hooks.on("chatMessage", (_chatLog, content) => (handleOffering(content) ? false : true));
+
+// Foundry v13+: commands must be registered or the chat log rejects them as
+// "not a valid chat message command". Copy the shape of a core command so this
+// keeps working if the registry's field names change.
+Hooks.once("init", () => {
+  const registry = (foundry.applications?.sidebar?.tabs?.ChatLog ?? globalThis.ChatLog)?.CHAT_COMMANDS;
+  const template = registry?.ooc ?? Object.values(registry ?? {})[0];
+  if (!template) return;
+
+  const names = new Set(["commune", ...Object.values(GODS).flatMap((god) => god.commands)]);
+  for (const name of names) {
+    if (registry[name]) continue;
+    const entry = {};
+    for (const [field, value] of Object.entries(template)) {
+      if (value instanceof RegExp) entry[field] = new RegExp(`^/${name}(?=\\s|$)[\\s\\S]*$`, "i");
+      else if (typeof value === "function") {
+        entry[field] = async function (_command, match) {
+          handleOffering([match].flat(2)[0] ?? "");
+          return false;
+        };
+      } else entry[field] = value;
+    }
+    registry[name] = entry;
+  }
+  console.log(`${MODULE_ID} | registered chat commands:`, [...names].join(", "));
 });
 
 // 2. GM client only: answer each new offering.
